@@ -23,7 +23,7 @@ st.markdown("""
 st.title("PrognosAir - 3D Aircraft Maintenance Viewer")
 
 # Embed the full HTML app into the Streamlit app
-with open("prognosair_3d.html", "r") as f:
+with open("prognosair.html", "r") as f:
     html_string = f.read()
 
 components.html(html_string, height=800, width=1400, scrolling=False)
