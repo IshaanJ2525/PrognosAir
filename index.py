@@ -2,15 +2,15 @@ import streamlit as st
 import streamlit.components.v1 as components
 import os
 
-st.set_page_config(layout="wide")
+# Serve the 3D viewer HTML with correct path
+html_file_path = os.path.join(os.getcwd(), "prognosair.html")
+with open(html_file_path, 'r', encoding='utf-8') as f:
+    html = f.read()
 
-# Streamlit UI
-st.title("PrognosAir 3D Aircraft Viewer")
-st.markdown("Click on parts of the aircraft to see maintenance info.")
+# Replace path in HTML dynamically
+html = html.replace("787-9.glb", "/public/787-9.glb")
 
-# Load the HTML content
-with open("prognosair.html", "r", encoding="utf-8") as f:
-    html_content = f.read()
-
-# Display the HTML with full width and height
-components.html(html_content, height=800, width=None)
+# Display
+st.set_page_config(layout="wide", page_title="PrognosAir")
+st.title("PrognosAir - Aircraft Maintenance Viewer")
+components.html(html, height=800)
