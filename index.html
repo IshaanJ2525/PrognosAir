@@ -7,7 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     html, body {
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
       height: 100%;
       font-family: 'Inter', sans-serif;
@@ -16,13 +17,17 @@
     }
 
     canvas {
-      position: absolute; top: 0; left: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
       z-index: 0;
+      pointer-events: none; /* ⛔ Prevent model from blocking overlay clicks */
     }
 
     #overlay {
-      position: absolute;
-      top: 40px; right: 40px;
+      position: fixed; /* ✅ Keeps it locked in place */
+      top: 40px;
+      right: 40px;
       background: rgba(30,30,35,0.75);
       padding: 24px;
       width: 360px;
@@ -32,6 +37,7 @@
       backdrop-filter: blur(20px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       border: 1px solid #2e2e2e;
+      pointer-events: auto; /* ✅ Make sure overlay receives taps */
     }
 
     #overlay h2 {
@@ -272,7 +278,8 @@
   function showOverlay(objectName) {
     const alias = partAliases[objectName] || objectName;
     const data = partData[alias];
-    document.getElementById('overlay').style.display = 'block';
+    const overlay = document.getElementById('overlay');
+    overlay.style.display = 'block';
     document.getElementById('part-title').textContent = alias;
     document.getElementById('part-details').textContent = data?.desc || "Component details not available";
 
@@ -307,6 +314,14 @@
     fill.style.background = usagePercent < 60 ? '#16a34a' : usagePercent < 90 ? '#facc15' : '#ef4444';
     progressInfo.textContent = `${usagePercent}% used · ${part.used}h / ${part.life}h`;
   }
+
+  // Optional: close overlay if user taps outside
+  window.addEventListener('touchstart', (e) => {
+    const overlay = document.getElementById('overlay');
+    if (overlay.style.display === 'block' && !overlay.contains(e.target)) {
+      overlay.style.display = 'none';
+    }
+  });
 
   const clock = new THREE.Clock();
   function animate() {
