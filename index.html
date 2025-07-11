@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PrognosAir - Aircraft Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -21,11 +21,12 @@
       top: 0;
       left: 0;
       z-index: 0;
-      pointer-events: none; /* ⛔ Prevent model from blocking overlay clicks */
+      pointer-events: auto; /* ✅ Allow interaction */
+      touch-action: none;    /* ✅ Prevent iOS zoom interference */
     }
 
     #overlay {
-      position: fixed; /* ✅ Keeps it locked in place */
+      position: fixed;
       top: 40px;
       right: 40px;
       background: rgba(30,30,35,0.75);
@@ -37,7 +38,7 @@
       backdrop-filter: blur(20px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       border: 1px solid #2e2e2e;
-      pointer-events: auto; /* ✅ Make sure overlay receives taps */
+      pointer-events: auto;
     }
 
     #overlay h2 {
@@ -194,6 +195,9 @@
 
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
+  controls.enableZoom = true;
+  controls.enableRotate = true;
+  controls.enablePan = true;
 
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
   scene.add(hemiLight);
@@ -315,7 +319,6 @@
     progressInfo.textContent = `${usagePercent}% used · ${part.used}h / ${part.life}h`;
   }
 
-  // Optional: close overlay if user taps outside
   window.addEventListener('touchstart', (e) => {
     const overlay = document.getElementById('overlay');
     if (overlay.style.display === 'block' && !overlay.contains(e.target)) {
