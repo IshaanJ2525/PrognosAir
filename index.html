@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PrognosAir - Aircraft Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -20,9 +20,10 @@
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       z-index: 0;
-      pointer-events: auto; /* ✅ Allow interaction */
-      touch-action: none;    /* ✅ Prevent iOS zoom interference */
+      pointer-events: none;
     }
 
     #overlay {
@@ -34,7 +35,7 @@
       width: 360px;
       border-radius: 12px;
       display: none;
-      z-index: 10;
+      z-index: 9999;
       backdrop-filter: blur(20px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       border: 1px solid #2e2e2e;
@@ -139,6 +140,7 @@
       justify-content: space-between;
       align-items: center;
       backdrop-filter: blur(10px);
+      z-index: 1000;
     }
 
     #statusIcon {
@@ -152,6 +154,8 @@
   </style>
 </head>
 <body>
+
+<!-- Component Overlay -->
 <div id="overlay">
   <h2 id="part-title">Component</h2>
   <p id="part-details">Status details here</p>
@@ -170,6 +174,7 @@
   <button onclick="document.getElementById('overlay').style.display='none'">Close</button>
 </div>
 
+<!-- Bottom Bar -->
 <div id="bottomBar">
   <div><span id="statusIcon"></span> <strong>Aircraft Status:</strong> Operational</div>
   <div>PrognosAir © 2025</div>
@@ -177,9 +182,11 @@
 
 <canvas id="webgl"></canvas>
 
+<!-- Three.js Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 <script>
   const canvas = document.getElementById('webgl');
   const scene = new THREE.Scene();
@@ -195,9 +202,6 @@
 
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.enableZoom = true;
-  controls.enableRotate = true;
-  controls.enablePan = true;
 
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
   scene.add(hemiLight);
@@ -218,6 +222,7 @@
       }
     });
     scene.add(model);
+
     if (gltf.animations.length > 0) {
       mixer = new THREE.AnimationMixer(model);
       const action = mixer.clipAction(gltf.animations[0]);
@@ -309,16 +314,17 @@
     const progressInfo = document.getElementById('progressInfo');
     table.innerHTML = '';
     for (const key in part.details) {
-      const row = `<tr><td>${key}</td><td>${part.details[key]}</td></tr>`;
+      const row = <tr><td>${key}</td><td>${part.details[key]}</td></tr>;
       table.innerHTML += row;
     }
     const usagePercent = Math.min(100, Math.round((part.used / part.life) * 100));
     const fill = document.getElementById('progressFill');
     fill.style.width = usagePercent + '%';
     fill.style.background = usagePercent < 60 ? '#16a34a' : usagePercent < 90 ? '#facc15' : '#ef4444';
-    progressInfo.textContent = `${usagePercent}% used · ${part.used}h / ${part.life}h`;
+    progressInfo.textContent = ${usagePercent}% used · ${part.used}h / ${part.life}h;
   }
 
+  // Close overlay on outside tap (mobile)
   window.addEventListener('touchstart', (e) => {
     const overlay = document.getElementById('overlay');
     if (overlay.style.display === 'block' && !overlay.contains(e.target)) {
@@ -336,5 +342,6 @@
   }
   animate();
 </script>
+
 </body>
 </html>
