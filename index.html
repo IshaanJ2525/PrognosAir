@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PrognosAir - Aircraft Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -20,14 +20,12 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
       z-index: 0;
-      pointer-events: none;
+      pointer-events: none; /* ⛔ Prevent model from blocking overlay clicks */
     }
 
     #overlay {
-      position: fixed;
+      position: fixed; /* ✅ Keeps it locked in place */
       top: 40px;
       right: 40px;
       background: rgba(30,30,35,0.75);
@@ -35,11 +33,11 @@
       width: 360px;
       border-radius: 12px;
       display: none;
-      z-index: 9999;
+      z-index: 10;
       backdrop-filter: blur(20px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       border: 1px solid #2e2e2e;
-      pointer-events: auto;
+      pointer-events: auto; /* ✅ Make sure overlay receives taps */
     }
 
     #overlay h2 {
@@ -140,7 +138,6 @@
       justify-content: space-between;
       align-items: center;
       backdrop-filter: blur(10px);
-      z-index: 1000;
     }
 
     #statusIcon {
@@ -154,8 +151,6 @@
   </style>
 </head>
 <body>
-
-<!-- Component Overlay -->
 <div id="overlay">
   <h2 id="part-title">Component</h2>
   <p id="part-details">Status details here</p>
@@ -174,7 +169,6 @@
   <button onclick="document.getElementById('overlay').style.display='none'">Close</button>
 </div>
 
-<!-- Bottom Bar -->
 <div id="bottomBar">
   <div><span id="statusIcon"></span> <strong>Aircraft Status:</strong> Operational</div>
   <div>PrognosAir © 2025</div>
@@ -182,11 +176,9 @@
 
 <canvas id="webgl"></canvas>
 
-<!-- Three.js Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
 <script>
   const canvas = document.getElementById('webgl');
   const scene = new THREE.Scene();
@@ -211,7 +203,7 @@
 
   let model, mixer;
   const loader = new THREE.GLTFLoader();
-  loader.load("static/787-9_9V-SCA.glb", gltf => {
+  loader.load("static/787-9.glb", gltf => {
     model = gltf.scene;
     model.scale.set(1, 1, 1);
     model.traverse(node => {
@@ -222,7 +214,6 @@
       }
     });
     scene.add(model);
-
     if (gltf.animations.length > 0) {
       mixer = new THREE.AnimationMixer(model);
       const action = mixer.clipAction(gltf.animations[0]);
@@ -324,7 +315,7 @@
     progressInfo.textContent = ${usagePercent}% used · ${part.used}h / ${part.life}h;
   }
 
-  // Close overlay on outside tap (mobile)
+  // Optional: close overlay if user taps outside
   window.addEventListener('touchstart', (e) => {
     const overlay = document.getElementById('overlay');
     if (overlay.style.display === 'block' && !overlay.contains(e.target)) {
@@ -342,6 +333,5 @@
   }
   animate();
 </script>
-
 </body>
 </html>
