@@ -145,12 +145,9 @@ controls.screenSpacePanning = true;
 controls.minDistance = 5;
 controls.maxDistance = 200;
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
-
-const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-keyLight.position.set(10, 20, 20);
-scene.add(keyLight);
+// Soft, full-scene illumination
+const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+scene.add(ambient);
 
 let model;
 const loader = new THREE.GLTFLoader();
@@ -193,9 +190,14 @@ window.addEventListener('touchstart', e => {
   }
 });
 
+function formatName(str) {
+  return str.replace(/_/g, ' ');
+}
+
 function showOverlay(name) {
-  document.getElementById('part-title').textContent = name;
-  document.getElementById('part-details').textContent = 'Component details for ' + name;
+  const cleanName = formatName(name);
+  document.getElementById('part-title').textContent = cleanName;
+  document.getElementById('part-details').textContent = 'Component details for ' + cleanName;
   document.getElementById('overlay').style.display = 'block';
   document.getElementById('part-table').innerHTML = `
     <tr><td>Condition</td><td>Normal</td></tr>
