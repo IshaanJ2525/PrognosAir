@@ -208,16 +208,23 @@ function formatName(str) {
 
 function showOverlay(name) {
   const cleanName = formatName(name);
+  const usage = 72;
+  const lifetime = 4000; // hours
+  const usedHours = (usage / 100) * lifetime;
+  const remaining = lifetime - usedHours;
+  const possibleIssues = remaining < 500 ? "Fatigue cracks or seal degradation likely." : "No expected issues.";
+
   document.getElementById('part-title').textContent = cleanName;
   document.getElementById('overlay').style.display = 'block';
   document.getElementById('part-table').innerHTML = `
     <tr><td>Condition</td><td>Normal</td></tr>
-    <tr><td>Last Check</td><td>2025-06</td></tr>`;
-  const usage = 72;
+    <tr><td>Last Check</td><td>2025-06</td></tr>
+    <tr><td>Expected Failures</td><td>${possibleIssues}</td></tr>`;
+
   const fill = document.getElementById('progressFill');
   fill.style.width = usage + '%';
   fill.style.background = usage < 60 ? '#16a34a' : usage < 90 ? '#facc15' : '#dc2626';
-  document.getElementById('progressInfo').textContent = `${usage}% used · 2880h / 4000h`;
+  document.getElementById('progressInfo').textContent = `${usage}% used · ${usedHours.toFixed(0)}h / ${lifetime}h`;
   document.getElementById('maint-warning').style.display = usage > 85 ? 'block' : 'none';
 }
 
