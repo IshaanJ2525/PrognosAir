@@ -2,108 +2,76 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PrognosAir - Aircraft Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+  <title>PrognosAir - Aircraft Viewer</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
       height: 100%;
+      overflow: hidden;
       font-family: 'Inter', sans-serif;
       background-color: #0e0e11;
       color: #f3f3f4;
+      touch-action: none;
     }
-
     canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 0;
-      pointer-events: none; /* ⛔ Prevent model from blocking overlay clicks */
+      width: 100vw;
+      height: 100vh;
+      display: block;
     }
-
     #overlay {
-      position: fixed; /* ✅ Keeps it locked in place */
-      top: 40px;
-      right: 40px;
-      background: rgba(30,30,35,0.75);
-      padding: 24px;
-      width: 360px;
-      border-radius: 12px;
+      position: fixed;
+      top: 4vh;
+      right: 4vw;
+      background: rgba(30, 30, 35, 0.85);
+      padding: 20px;
+      max-width: 350px;
+      width: 85vw;
+      border-radius: 16px;
       display: none;
       z-index: 10;
       backdrop-filter: blur(20px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      border: 1px solid #2e2e2e;
-      pointer-events: auto; /* ✅ Make sure overlay receives taps */
     }
-
     #overlay h2 {
       margin-top: 0;
       font-size: 20px;
     }
-
     #overlay p {
       color: #bbb;
-      margin: 10px 0;
       font-size: 14px;
+      margin: 10px 0;
     }
-
-    #overlay select, #overlay table {
+    #overlay table {
       width: 100%;
       font-size: 13px;
-      margin-top: 12px;
-    }
-
-    #overlay select {
-      padding: 6px;
-      background: #1c1c1e;
-      color: #eee;
-      border: 1px solid #444;
-      border-radius: 6px;
-    }
-
-    #overlay table {
-      border-collapse: collapse;
       margin-top: 10px;
+      border-collapse: collapse;
       background: #121214;
       border: 1px solid #333;
     }
-
     #overlay th, #overlay td {
       padding: 8px 10px;
       text-align: left;
       border-bottom: 1px solid #2a2a2d;
     }
-
     #overlay th {
       background: #1f1f22;
       color: #aaa;
     }
-
     #overlay button {
       margin-top: 16px;
       padding: 10px 16px;
-      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      background: #0ea5e9;
       border: none;
       border-radius: 6px;
       color: #fff;
       font-weight: 500;
       cursor: pointer;
     }
-
-    .progress-container {
-      margin-top: 14px;
-    }
-
-    .progress-label {
-      font-size: 13px;
-      color: #999;
-      margin-bottom: 4px;
-    }
-
+    .progress-container { margin-top: 14px; }
     .progress-bar {
       width: 100%;
       height: 10px;
@@ -111,20 +79,17 @@
       border-radius: 4px;
       overflow: hidden;
     }
-
     .progress-fill {
       height: 100%;
       width: 0%;
       transition: width 0.5s ease;
     }
-
     .progress-info {
       margin-top: 6px;
       font-size: 13px;
       color: #aaa;
       text-align: right;
     }
-
     #bottomBar {
       position: absolute;
       bottom: 0;
@@ -139,199 +104,168 @@
       align-items: center;
       backdrop-filter: blur(10px);
     }
-
-    #statusIcon {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #16a34a;
-      margin-right: 6px;
-    }
   </style>
 </head>
 <body>
+<canvas id="webgl"></canvas>
 <div id="overlay">
-  <h2 id="part-title">Component</h2>
-  <p id="part-details">Status details here</p>
+  <h2 id="part-title"></h2>
+  <p id="part-details"></p>
   <div class="progress-container">
-    <div class="progress-label">Component Usage</div>
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
     <div class="progress-info" id="progressInfo"></div>
   </div>
-  <select id="subpart-dropdown"></select>
-  <table>
-    <thead><tr><th>Metric</th><th>Value</th></tr></thead>
-    <tbody id="part-table"></tbody>
-  </table>
+  <table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody id="part-table"></tbody></table>
   <button onclick="document.getElementById('overlay').style.display='none'">Close</button>
 </div>
-
 <div id="bottomBar">
-  <div><span id="statusIcon"></span> <strong>Aircraft Status:</strong> Operational</div>
   <div>PrognosAir © 2025</div>
+  <div>Status: Operational</div>
 </div>
-
-<canvas id="webgl"></canvas>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-  const canvas = document.getElementById('webgl');
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#0e0e11');
-
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(-35, 15, 30);
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const canvas = document.getElementById('webgl');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#0e0e11');
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(-35, 15, 30);
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.enablePan = true;
+controls.screenSpacePanning = true;
+controls.minDistance = 5;
+controls.maxDistance = 200;
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+scene.add(hemiLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+dirLight.position.set(10, 10, 10);
+scene.add(dirLight);
+let model;
+const loader = new THREE.GLTFLoader();
+loader.load("static/787-9_9V-SCA.glb", gltf => {
+  model = gltf.scene;
+  model.scale.set(1, 1, 1);
+  model.traverse(node => {
+    if (node.isMesh && node.material.map) {
+      node.material.map.encoding = THREE.sRGBEncoding;
+      node.material.map.anisotropy = 16;
+      node.material.needsUpdate = true;
+    }
+  });
+  scene.add(model);
+});
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.outputEncoding = THREE.sRGBEncoding;
-
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
-  scene.add(hemiLight);
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  dirLight.position.set(10, 10, 10);
-  scene.add(dirLight);
-
-  let model, mixer;
-  const loader = new THREE.GLTFLoader();
-  loader.load("static/787-9.glb", gltf => {
-    model = gltf.scene;
-    model.scale.set(1, 1, 1);
-    model.traverse(node => {
-      if (node.isMesh && node.material.map) {
-        node.material.map.encoding = THREE.sRGBEncoding;
-        node.material.map.anisotropy = 16;
-        node.material.needsUpdate = true;
-      }
-    });
-    scene.add(model);
-    if (gltf.animations.length > 0) {
-      mixer = new THREE.AnimationMixer(model);
-      const action = mixer.clipAction(gltf.animations[0]);
-      action.setLoop(THREE.LoopOnce);
-      action.clampWhenFinished = true;
-      setTimeout(() => action.play(), 15000);
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-
-  function handlePointerInteraction(clientX, clientY) {
-    mouse.x = (clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    if (model) {
-      const intersects = raycaster.intersectObjects(model.children, true);
-      if (intersects.length > 0) {
-        const part = intersects[0].object;
-        showOverlay(part.name);
-      }
-    }
+});
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+function interact(x, y) {
+  pointer.x = (x / window.innerWidth) * 2 - 1;
+  pointer.y = -(y / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  if (!model) return;
+  const intersects = raycaster.intersectObjects(model.children, true);
+  if (intersects.length > 0) {
+    const part = intersects[0].object.name;
+    showOverlay(part);
   }
-
-  window.addEventListener('click', e => handlePointerInteraction(e.clientX, e.clientY));
-  window.addEventListener('touchstart', e => {
-    if (e.touches.length === 1) {
-      handlePointerInteraction(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  });
-
-  const partAliases = {
-    'Object_170': 'Fuselage',
-    'Object_141': 'EngineLeft',
-    'Object_169': 'EngineRight',
-    'Object_97':  'WingLeft',
-    'Object_99':  'WingRight'
-  };
-
-  const partData = {
-    'Fuselage': {
-      desc: 'Main aircraft body structure.',
-      subparts: [
-        { name: 'Frame A', used: 2000, life: 5000, details: { 'Corrosion': 'None', 'Inspection': '2026' } }
-      ]
-    },
-    'EngineLeft': {
-      desc: 'Left engine under the wing.',
-      subparts: [
-        { name: 'Fan Blade', used: 3800, life: 4000, details: { 'Usage': '3800h', 'Next Maint.': '200h' } }
-      ]
-    }
-  };
-
-  function showOverlay(objectName) {
-    const alias = partAliases[objectName] || objectName;
-    const data = partData[alias];
-    const overlay = document.getElementById('overlay');
-    overlay.style.display = 'block';
-    document.getElementById('part-title').textContent = alias;
-    document.getElementById('part-details').textContent = data?.desc || "Component details not available";
-
-    const dropdown = document.getElementById('subpart-dropdown');
-    const table = document.getElementById('part-table');
-    dropdown.innerHTML = '';
-    table.innerHTML = '';
-
-    if (data?.subparts) {
-      data.subparts.forEach((s, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = s.name;
-        dropdown.appendChild(opt);
-      });
-      dropdown.onchange = () => updateTable(data.subparts[dropdown.value]);
-      updateTable(data.subparts[0]);
-    }
+}
+window.addEventListener('click', e => interact(e.clientX, e.clientY));
+window.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    interact(e.touches[0].clientX, e.touches[0].clientY);
   }
-
-  function updateTable(part) {
-    const table = document.getElementById('part-table');
-    const progressInfo = document.getElementById('progressInfo');
-    table.innerHTML = '';
-    for (const key in part.details) {
-      const row = `<tr><td>${key}</td><td>${part.details[key]}</td></tr>`;
-      table.innerHTML += row;
-    }
-    const usagePercent = Math.min(100, Math.round((part.used / part.life) * 100));
-    const fill = document.getElementById('progressFill');
-    fill.style.width = usagePercent + '%';
-    fill.style.background = usagePercent < 60 ? '#16a34a' : usagePercent < 90 ? '#facc15' : '#ef4444';
-    progressInfo.textContent = `${usagePercent}% used · ${part.used}h / ${part.life}h`;
-  }
-
-  // Optional: close overlay if user taps outside
-  window.addEventListener('touchstart', (e) => {
-    const overlay = document.getElementById('overlay');
-    if (overlay.style.display === 'block' && !overlay.contains(e.target)) {
-      overlay.style.display = 'none';
-    }
-  });
-
-  const clock = new THREE.Clock();
-  function animate() {
-    requestAnimationFrame(animate);
-    const delta = clock.getDelta();
-    if (mixer) mixer.update(delta);
-    controls.update();
-    renderer.render(scene, camera);
-  }
-  animate();
+});
+const partAliases = {
+  "APU Exhaust": "APU Exhaust",
+  "Elevator Left Wing": "Elevator Left Wing",
+  "Elevator Right Wing": "Elevator Right Wing",
+  "Engine 1 Casing": "Engine 1 Casing",
+  "Engine 1 Cover": "Engine 1 Cover",
+  "Engine 1 Exhaust Tip": "Engine 1 Exhaust Tip",
+  "Engine 1 Rotor Blades": "Engine 1 Rotor Blades",
+  "Engine 1 Support": "Engine 1 Support",
+  "Engine 2 Casing": "Engine 2 Casing",
+  "Engine 2 Cover": "Engine 2 Cover",
+  "Engine 2 Exhaust Tip": "Engine 2 Exhaust Tip",
+  "Engine 2 Rotor Blades": "Engine 2 Rotor Blades",
+  "Engine 2 Support": "Engine 2 Support",
+  "Flap A Left Wing": "Flap A Left Wing",
+  "Flap A Right Wing": "Flap A Right Wing",
+  "Flap B Left Wing": "Flap B Left Wing",
+  "Flap B Right Wing": "Flap B Right Wing",
+  "Fuselage": "Fuselage",
+  "Fuselage Underbody": "Fuselage Underbody",
+  "Horizontal Stabilizer Left": "Horizontal Stabilizer Left",
+  "Horizontal Stabilizer Right": "Horizontal Stabilizer Right",
+  "Horizontal Stabilizer Slat Left": "Horizontal Stabilizer Slat Left",
+  "Horizontal Stabilizer Slat Right": "Horizontal Stabilizer Slat Right",
+  "Left Gear Cover": "Left Gear Cover",
+  "Left Wing": "Left Wing",
+  "Nose Gear Cover Left": "Nose Gear Cover Left",
+  "Nose Gear Cover Right": "Nose Gear Cover Right",
+  "Nose Gear Strut": "Nose Gear Strut",
+  "Nose Wheel Left": "Nose Wheel Left",
+  "Nose Wheel Right": "Nose Wheel Right",
+  "Nose Wheel Rim Bolt Left": "Nose Wheel Rim Bolt Left",
+  "Nose Wheel Rim Bolt Right": "Nose Wheel Rim Bolt Right",
+  "Nose Wheel Rim Left": "Nose Wheel Rim Left",
+  "Nose Wheel Rim Right": "Nose Wheel Rim Right",
+  "Pylon A Left": "Pylon A Left",
+  "Pylon A Right": "Pylon A Right",
+  "Pylon B Left": "Pylon B Left",
+  "Pylon B Right": "Pylon B Right",
+  "Pylon C Left": "Pylon C Left",
+  "Pylon C Right": "Pylon C Right",
+  "Right Gear Cover": "Right Gear Cover",
+  "Right Wing": "Right Wing",
+  "Rotor Engine 1": "Rotor Engine 1",
+  "Rotor Engine 2": "Rotor Engine 2",
+  "Rudder": "Rudder",
+  "Strakes Engine 1": "Strakes Engine 1",
+  "Strakes Engine 2": "Strakes Engine 2",
+  "Tyre 1 Gear Left": "Tyre 1 Gear Left",
+  "Tyre 1 Rim Gear Left": "Tyre 1 Rim Gear Left",
+  "Tyre 2 Gear Left": "Tyre 2 Gear Left",
+  "Tyre 3 Gear Left": "Tyre 3 Gear Left",
+  "Tyre 4 Gear Left": "Tyre 4 Gear Left",
+  "Vertical Stabilizer": "Vertical Stabilizer",
+  "Vertical Stabilizer Front": "Vertical Stabilizer Front",
+  "Windshield A Left": "Windshield A Left",
+  "Windshield A Right": "Windshield A Right",
+  "Windshield B Left": "Windshield B Left",
+  "Windshield B Right": "Windshield B Right",
+  "Wiper Left": "Wiper Left",
+  "Wiper Right": "Wiper Right"
+};
+function showOverlay(name) {
+  const label = partAliases[name] || name;
+  document.getElementById('part-title').textContent = label;
+  document.getElementById('part-details').textContent = 'Component details for ' + label;
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('part-table').innerHTML = `
+    <tr><td>Condition</td><td>Normal</td></tr>
+    <tr><td>Last Check</td><td>2025-06</td></tr>`;
+  document.getElementById('progressFill').style.width = '72%';
+  document.getElementById('progressFill').style.background = '#facc15';
+  document.getElementById('progressInfo').textContent = '72% used · 2880h / 4000h';
+}
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
 </script>
 </body>
 </html>
