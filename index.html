@@ -40,9 +40,6 @@
       font-size: 20px;
       color: #111;
     }
-    #overlay p {
-      display: none;
-    }
     #overlay table {
       width: 100%;
       font-size: 13px;
@@ -103,19 +100,24 @@
       align-items: center;
       backdrop-filter: blur(10px);
     }
+    #maint-warning {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 <canvas id="webgl"></canvas>
 <div id="overlay">
   <h2 id="part-title"></h2>
-  <p id="part-details"></p>
   <div class="progress-container">
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
     <div class="progress-info" id="progressInfo"></div>
   </div>
+  <div id="maint-warning" style="display:none">⚠️ Maintenance required soon!</div>
   <table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody id="part-table"></tbody></table>
   <button onclick="document.getElementById('overlay').style.display='none'">Close</button>
 </div>
@@ -170,7 +172,7 @@ loader.load("static/787-9_9V-SCA.glb", gltf => {
     const action = mixer.clipAction(gltf.animations[0]);
     action.setLoop(THREE.LoopOnce);
     action.clampWhenFinished = true;
-    setTimeout(() => action.play(), 5000); // Start animation after 5 seconds
+    setTimeout(() => action.play(), 5000);
   }
 });
 
@@ -211,9 +213,12 @@ function showOverlay(name) {
   document.getElementById('part-table').innerHTML = `
     <tr><td>Condition</td><td>Normal</td></tr>
     <tr><td>Last Check</td><td>2025-06</td></tr>`;
-  document.getElementById('progressFill').style.width = '72%';
-  document.getElementById('progressFill').style.background = '#facc15';
-  document.getElementById('progressInfo').textContent = '72% used · 2880h / 4000h';
+  const usage = 72;
+  const fill = document.getElementById('progressFill');
+  fill.style.width = usage + '%';
+  fill.style.background = usage < 60 ? '#16a34a' : usage < 90 ? '#facc15' : '#dc2626';
+  document.getElementById('progressInfo').textContent = `${usage}% used · 2880h / 4000h`;
+  document.getElementById('maint-warning').style.display = usage > 85 ? 'block' : 'none';
 }
 
 const clock = new THREE.Clock();
