@@ -106,6 +106,7 @@
 </head>
 <body>
   <canvas id="webgl"></canvas>
+
   <div id="overlay">
     <h2 id="part-title">Component</h2>
     <div class="progress-bar">
@@ -113,16 +114,20 @@
     </div>
     <div class="progress-info" id="progressInfo"></div>
     <div id="maint-warning" style="display: none;">⚠️ Maintenance required soon!</div>
+
     <table>
       <thead><tr><th>Specification</th><th>Value</th></tr></thead>
       <tbody id="part-table"></tbody>
     </table>
+
     <table>
       <thead><tr><th>Potential Issue</th><th>Severity</th><th>Probability</th></tr></thead>
       <tbody id="issue-table"></tbody>
     </table>
+
     <button onclick="document.getElementById('overlay').style.display='none'">Close</button>
   </div>
+
   <div id="bottomBar">
     <div>PrognosAir © 2025</div>
     <div>Status: Operational</div>
@@ -130,11 +135,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script>
     const canvas = document.getElementById('webgl');
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#d4d4d8');
+
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(-35, 15, 30);
 
@@ -146,15 +152,8 @@
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    new THREE.RGBELoader()
-      .setDataType(THREE.UnsignedByteType)
-      .load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/venice_sunset_1k.hdr', function(hdrTexture) {
-        const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-        scene.environment = envMap;
-        hdrTexture.dispose();
-        pmremGenerator.dispose();
-      });
+    const light = new THREE.HemisphereLight(0xffffff, 0x888888, 1.3);
+    scene.add(light);
 
     let model, mixer;
     const loader = new THREE.GLTFLoader();
@@ -220,16 +219,15 @@
 
     function showOverlay(name) {
       const cleanName = formatName(name);
-      const lifetime = cleanName.toLowerCase().includes("engine") ? 32000 : 5000;
+      const lifetime = cleanName.toLowerCase().includes(\"engine\") ? 32000 : 5000;
       const usage = Math.floor(Math.random() * 90) + 5;
       const usedHours = Math.round((usage / 100) * lifetime);
       const remaining = lifetime - usedHours;
 
-      const severity = remaining < 1000 ? "High" : remaining < 3000 ? "Medium" : "Low";
-      const probability = remaining < 500 ? "95%" : remaining < 2000 ? "60%" : "10%";
+      const severity = remaining < 1000 ? \"High\" : remaining < 3000 ? \"Medium\" : \"Low\";
+      const probability = remaining < 500 ? \"95%\" : remaining < 2000 ? \"60%\" : \"10%\";
       const possibleIssues = remaining < 2000
-        ? "Seal wear, bearing stress, vibration rise"
-        : "No expected issues";
+        ? \"Seal wear, bearing stress, vibration rise\"\n        : \"No expected issues\";
 
       document.getElementById('part-title').textContent = cleanName;
       document.getElementById('overlay').style.display = 'block';
