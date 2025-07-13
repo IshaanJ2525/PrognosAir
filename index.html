@@ -40,6 +40,9 @@
       font-size: 20px;
       color: #111;
     }
+    #overlay p {
+      display: none;
+    }
     #overlay table {
       width: 100%;
       font-size: 13px;
@@ -100,24 +103,19 @@
       align-items: center;
       backdrop-filter: blur(10px);
     }
-    #maint-warning {
-      color: #dc2626;
-      font-size: 13px;
-      margin-top: 10px;
-    }
   </style>
 </head>
 <body>
 <canvas id="webgl"></canvas>
 <div id="overlay">
   <h2 id="part-title"></h2>
+  <p id="part-details"></p>
   <div class="progress-container">
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
     <div class="progress-info" id="progressInfo"></div>
   </div>
-  <div id="maint-warning" style="display:none">⚠️ Maintenance required soon!</div>
   <table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody id="part-table"></tbody></table>
   <button onclick="document.getElementById('overlay').style.display='none'">Close</button>
 </div>
@@ -146,10 +144,11 @@ controls.screenSpacePanning = true;
 controls.minDistance = 5;
 controls.maxDistance = 200;
 
+// Improve shading by using Hemisphere Light + environment lighting
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
 scene.add(hemiLight);
 
-let model, mixer;
+let model;
 const loader = new THREE.GLTFLoader();
 loader.load("static/787-9_9V-SCA.glb", gltf => {
   model = gltf.scene;
@@ -166,14 +165,6 @@ loader.load("static/787-9_9V-SCA.glb", gltf => {
     }
   });
   scene.add(model);
-
-  if (gltf.animations.length > 0) {
-    mixer = new THREE.AnimationMixer(model);
-    const action = mixer.clipAction(gltf.animations[0]);
-    action.setLoop(THREE.LoopOnce);
-    action.clampWhenFinished = true;
-    setTimeout(() => action.play(), 5000);
-  }
 });
 
 window.addEventListener('resize', () => {
@@ -208,31 +199,19 @@ function formatName(str) {
 
 function showOverlay(name) {
   const cleanName = formatName(name);
-  const usage = 72;
-  const lifetime = 4000; // hours
-  const usedHours = (usage / 100) * lifetime;
-  const remaining = lifetime - usedHours;
-  const possibleIssues = remaining < 500 ? "Fatigue cracks or seal degradation likely." : "No expected issues.";
-
   document.getElementById('part-title').textContent = cleanName;
   document.getElementById('overlay').style.display = 'block';
   document.getElementById('part-table').innerHTML = `
     <tr><td>Condition</td><td>Normal</td></tr>
-    <tr><td>Last Check</td><td>2025-06</td></tr>
-    <tr><td>Expected Failures</td><td>${possibleIssues}</td></tr>`;
-
-  const fill = document.getElementById('progressFill');
-  fill.style.width = usage + '%';
-  fill.style.background = usage < 60 ? '#16a34a' : usage < 90 ? '#facc15' : '#dc2626';
-  document.getElementById('progressInfo').textContent = `${usage}% used · ${usedHours.toFixed(0)}h / ${lifetime}h`;
-  document.getElementById('maint-warning').style.display = usage > 85 ? 'block' : 'none';
+    <tr><td>Last Check</td><td>2025-06</td></tr>`;
+  document.getElementById('progressFill').style.width = '72%';
+  document.getElementById('progressFill').style.background = '#facc15';
+  document.getElementById('progressInfo').textContent = '72% used · 2880h / 4000h';
 }
 
 const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
-  const delta = clock.getDelta();
-  if (mixer) mixer.update(delta);
   controls.update();
   renderer.render(scene, camera);
 }
