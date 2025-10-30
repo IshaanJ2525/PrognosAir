@@ -7,7 +7,7 @@ const HeaderSection = () => {
   const [airport, setAirport] = useState('LHR');
 
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 flex justify-between items-center w-[90%] max-w-5xl px-4 py-3 rounded-2xl bg-[#050B16]/90 backdrop-blur-md shadow-lg border border-white/10">
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 flex justify-between items-center w-[90%] max-w-5xl px-4 py-3 rounded-2xl bg-[#050B16]/90 backdrop-blur-md shadow-lg border border-white/10 z-50">
 
       {/* Left Section */}
       <div className="flex items-center space-x-3">

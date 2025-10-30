@@ -68,7 +68,7 @@ const AircraftModelViewer = ({ onPartClick }) => {
     <div className="w-full h-full">
         <model-viewer
         ref={modelRef}
-        src="/models/787-9_9V-SCA.glb"
+        src={`${process.env.PUBLIC_URL}/models/787-9_9V-SCA.glb`}
         alt="Boeing 787"
         camera-controls
         interpolation-decay={120}
