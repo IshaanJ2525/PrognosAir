@@ -1,8 +1,13 @@
 
 import React from 'react';
+import { partAliases } from './partAliases';
 
 const Overlay = ({ part, onClose }) => {
   if (!part) return null;
+
+  const getDisplayName = (name) => {
+    return partAliases[name] || name;
+  };
 
   const usage = Math.round((part.usedHours / part.totalHours) * 100);
 
@@ -11,8 +16,7 @@ const Overlay = ({ part, onClose }) => {
       className="fixed top-1/2 -translate-y-1/2 right-6 w-96 bg-[#050B16]/95 backdrop-blur-md border border-white/10 shadow-2xl p-6 rounded-2xl flex flex-col transition-all duration-300">
 
       <div className="flex justify-between items-center mb-3">
-        <h2 id="partName" className="text-2xl font-semibold">{part.name}</h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg">&times;</button>
+        <h2 id="partName" className="text-2xl font-semibold">{getDisplayName(part.name)}</h2>
       </div>
 
       <p id="statusText" className={`text-sm ${part.condition === "Attention Required" ? 'text-red-400' : 'text-green-400'} mb-4 flex items-center gap-2`}>
@@ -60,7 +64,6 @@ const Overlay = ({ part, onClose }) => {
 
       <div className="flex justify-between mt-6">
         <button onClick={onClose} className="bg-[#1E293B] px-5 py-2 rounded-xl hover:bg-[#334155] transition">Close</button>
-        <button className="bg-sky-600 hover:bg-sky-500 px-5 py-2 rounded-xl font-semibold transition">View Details</button>
       </div>
     </div>
   );

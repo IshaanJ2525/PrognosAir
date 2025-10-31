@@ -1,43 +1,24 @@
 /* eslint-disable react/no-unknown-property */
 import React, { useRef, useEffect } from 'react';
+import { partAliases } from './partAliases';
 
 const AircraftModelViewer = ({ onPartClick }) => {
   const modelRef = useRef();
 
-  const partData = {
-    "Fuselage": {
-      name: "Fuselage",
-      usedHours: 3920,
-      totalHours: 4000,
-      condition: "Attention Required",
-      lastCheck: "2025-06",
-      nextService: "80h remaining",
-    },
-    "Wing": {
-        name: "Wing",
-        usedHours: 1500,
-        totalHours: 5000,
-        condition: "Good",
-        lastCheck: "2025-08",
-        nextService: "3500h remaining",
-      },
-    "Engine": {
-        name: "Engine",
-        usedHours: 2500,
-        totalHours: 3000,
-        condition: "Good",
-        lastCheck: "2025-07",
-        nextService: "500h remaining",
-      },
-    "Tail": {
-        name: "Tail",
-        usedHours: 500,
-        totalHours: 6000,
-        condition: "Good",
-        lastCheck: "2025-09",
-        nextService: "5500h remaining",
-      },
-  };
+  const partData = Object.keys(partAliases).reduce((acc, partName) => {
+    const usedHours = Math.floor(Math.random() * 4000);
+    const totalHours = 4000;
+    const condition = usedHours > 3800 ? "Attention Required" : "Good";
+    acc[partName] = {
+      name: partName,
+      usedHours,
+      totalHours,
+      condition,
+      lastCheck: `2025-0${Math.floor(Math.random() * 9) + 1}`,
+      nextService: `${totalHours - usedHours}h remaining`,
+    };
+    return acc;
+  }, {});
 
   useEffect(() => {
     const modelViewer = modelRef.current;
@@ -50,9 +31,11 @@ const AircraftModelViewer = ({ onPartClick }) => {
           if (partData[partName]) {
             onPartClick(partData[partName]);
           } else {
+            // Fallback to a default part if the clicked part is not in partData
             onPartClick(partData["Fuselage"]);
           }
         } else {
+            // Fallback to a default part if no material is found
             onPartClick(partData["Fuselage"]);
         }
       };
@@ -72,7 +55,7 @@ const AircraftModelViewer = ({ onPartClick }) => {
         alt="Boeing 787"
         camera-controls
         interpolation-decay={120}
-        style={{ width: '100%', height: '100%', cursor: 'default' }}
+        style={{ width: '100%', height: '100%', cursor: 'pointer' }}
         ></model-viewer>
     </div>
   );
