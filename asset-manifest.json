@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/PrognosAir/static/css/main.fd8a7b81.css",
-    "main.js": "/PrognosAir/static/js/main.6390849b.js",
+    "main.js": "/PrognosAir/static/js/main.5dcb2192.js",
     "static/js/967.8dd67c39.chunk.js": "/PrognosAir/static/js/967.8dd67c39.chunk.js",
     "static/js/453.37e040f0.chunk.js": "/PrognosAir/static/js/453.37e040f0.chunk.js",
     "index.html": "/PrognosAir/index.html",
     "main.fd8a7b81.css.map": "/PrognosAir/static/css/main.fd8a7b81.css.map",
-    "main.6390849b.js.map": "/PrognosAir/static/js/main.6390849b.js.map",
+    "main.5dcb2192.js.map": "/PrognosAir/static/js/main.5dcb2192.js.map",
     "967.8dd67c39.chunk.js.map": "/PrognosAir/static/js/967.8dd67c39.chunk.js.map",
     "453.37e040f0.chunk.js.map": "/PrognosAir/static/js/453.37e040f0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.fd8a7b81.css",
-    "static/js/main.6390849b.js"
+    "static/js/main.5dcb2192.js"
   ]
 }
