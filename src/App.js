@@ -65,7 +65,7 @@ function App() {
     try {
       // In a real app, this would fetch from a backend.
       // For GitHub Pages, we use a static JSON file.
-      const response = await fetch(`/PrognosAir/mock_predictions.json`);
+      const response = await fetch(`${process.env.PUBLIC_URL}/mock_predictions.json`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
