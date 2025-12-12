@@ -1,7 +1,7 @@
 {
   "name": "prognosair-ui",
   "version": "0.1.0",
-  "homepage": "https://IshaanJ2525.github.io/PA-Backup",
+  "homepage": "https://IshaanJ2525.github.io/PrognosAir",
   "private": true,
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.10",
