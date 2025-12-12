@@ -62,229 +62,40 @@ function App() {
 
   const fetchPredictions = useCallback(async () => {
     setLoadingPrognosis(true);
-    const scheduledFlights = [];
-    const today = new Date();
-    const destinations = ['LHR', 'CDG', 'DXB', 'JFK', 'SIN', 'FRA', 'AMS', 'HKG', 'IST', 'LAX', 'NRT', 'ICN', 'BKK', 'KUL', 'CGK'];
-    let currentPartData = JSON.parse(JSON.stringify(partData));
-
-    // Define scenarios for each flight to create diverse predictions
-    const scenarios = [
-      { name: 'Normal Long Haul', daysOffset: 1, destinationIndex: 0, flightHours: 10 + Math.random() * 4, cycles: 1, altitude: 35000 + Math.random() * 5000, sectorLength: 5000 + Math.random() * 2000, weatherMultiplier: 1, partWear: 'balanced' },
-      { name: 'Engine Stress', daysOffset: 7, destinationIndex: 1, flightHours: 12 + Math.random() * 3, cycles: 1, altitude: 32000 + Math.random() * 4000, sectorLength: 4500 + Math.random() * 1500, weatherMultiplier: 1.2, partWear: 'engine' },
-      { name: 'Hydraulic Load', daysOffset: 14, destinationIndex: 2, flightHours: 8 + Math.random() * 4, cycles: 1, altitude: 30000 + Math.random() * 3000, sectorLength: 3500 + Math.random() * 1000, weatherMultiplier: 0.8, partWear: 'hydraulic' },
-      { name: 'Cold Weather', daysOffset: 21, destinationIndex: 3, flightHours: 9 + Math.random() * 3, cycles: 1, altitude: 28000 + Math.random() * 2000, sectorLength: 4000 + Math.random() * 1000, weatherMultiplier: 0.5, partWear: 'structural' },
-      { name: 'High Humidity', daysOffset: 28, destinationIndex: 4, flightHours: 11 + Math.random() * 4, cycles: 1, altitude: 33000 + Math.random() * 4000, sectorLength: 4800 + Math.random() * 2000, weatherMultiplier: 1.5, partWear: 'corrosion' }
-    ];
-
-    for (let i = 0; i < 5; i++) {
-      const scenario = scenarios[i];
-      const flightDate = new Date(today);
-      flightDate.setDate(today.getDate() + scenario.daysOffset);
-      const dateStr = flightDate.toISOString().split('T')[0];
-      const flightNum = String(1000 + i).padStart(4, '0');
-      const destination = destinations[scenario.destinationIndex];
-      const flight_hours = scenario.flightHours;
-      const cycles = scenario.cycles;
-
-      // Apply scenario-based part wear
-      Object.keys(currentPartData).forEach(partName => {
-        let wearMultiplier = 1;
-        if (scenario.partWear === 'engine' && partName.includes('Engine')) wearMultiplier = 1.5;
-        else if (scenario.partWear === 'hydraulic' && (partName.includes('Hydraulic') || partName.includes('Flap') || partName.includes('Gear'))) wearMultiplier = 1.4;
-        else if (scenario.partWear === 'structural' && (partName.includes('Fuselage') || partName.includes('Wing'))) wearMultiplier = 1.3;
-        else if (scenario.partWear === 'corrosion' && (partName.includes('Gear') || partName.includes('Fuselage'))) wearMultiplier = 1.6;
-        currentPartData[partName].usedHours += flight_hours * wearMultiplier;
-      });
-
-      const partBasedFeatures = processPartData(currentPartData);
-      const baseWeather = getHistoricalWeather(destination, dateStr);
-      // Adjust weather based on scenario
-      const weather = {
-        temperature_c: baseWeather.temperature_c * scenario.weatherMultiplier + (Math.random() - 0.5) * 10,
-        humidity_pct: Math.min(100, Math.max(0, baseWeather.humidity_pct * scenario.weatherMultiplier + (Math.random() - 0.5) * 20)),
-        precipitation_mm: baseWeather.precipitation_mm * scenario.weatherMultiplier + Math.random() * 5,
-        wind_speed_kts: baseWeather.wind_speed_kts + (Math.random() - 0.5) * 10,
-        visibility_km: Math.max(0, baseWeather.visibility_km + (Math.random() - 0.5) * 3),
-        sand_dust_index: baseWeather.sand_dust_index + Math.random() * 10
-      };
-
-      const inputData = {
-        flight_hours,
-        cycles,
-        ...partBasedFeatures,
-        ...weather,
-        avg_altitude_ft: scenario.altitude,
-        sector_length_nm: scenario.sectorLength,
-        turbulence_events: Math.floor(Math.random() * 4) + (scenario.weatherMultiplier > 1.2 ? 1 : 0),
-        icing_reports: weather.temperature_c < 0 ? Math.floor(Math.random() * 3) + (scenario.name === 'Cold Weather' ? 2 : 0) : 0,
-        num_open_MEL_items: Math.floor(Math.random() * 3) + (i > 2 ? 1 : 0),
-        recent_minor_defects: Math.floor(Math.random() * 4) + (scenario.partWear !== 'balanced' ? 1 : 0),
-        bird_strike_reports: Math.floor(Math.random() * 2),
-        runway_incident_report: Math.floor(Math.random() * 1),
-        crew_hours_last_7days: 30 + Math.random() * 30,
-        turnaround_time_min: 40 + Math.random() * 30,
-        part_data: currentPartData
-      };
-
-      try {
-        const response = await fetch('http://localhost:8001/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputData) });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const predictionData = await response.json();
-        scheduledFlights.push({
-          flight_id: `SQ${flightNum}_${dateStr}_${destination}`,
-          destination,
-          ...predictionData,
-          input_data: inputData,
-          weather_data: { ...weather, is_extreme: weather.temperature_c < -5 || weather.humidity_pct > 90 },
-          scenario: scenario.name
-        });
-      } catch (apiError) {
-        console.warn(`Failed to get prediction for flight ${i + 1}, using fallback:`, apiError);
+    try {
+      // In a real app, this would fetch from a backend.
+      // For GitHub Pages, we use a static JSON file.
+      const response = await fetch(`/PrognosAir/mock_predictions.json`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+      const data = await response.json();
+      setPredictions(data);
+    } catch (error) {
+      console.error("Failed to fetch mock predictions:", error);
+      // Optionally, set some error state to show in the UI
+    } finally {
+      setLoadingPrognosis(false);
     }
-    setPredictions(scheduledFlights);
-    setLoadingPrognosis(false);
-  }, [partData]);
+  }, []);
 
   useEffect(() => {
     fetchPredictions();
   }, [fetchPredictions]);
 
   const handleAddCustomFlight = async (customFlightForm) => {
-    let currentPartData = JSON.parse(JSON.stringify(partData));
-    predictions.forEach(flight => {
-      Object.keys(currentPartData).forEach(partName => {
-        currentPartData[partName].usedHours += flight.input_data.flight_hours;
-      });
-    });
-
-    const { flight_name, flight_hours, cycles, destination, flight_date, avg_altitude_ft, sector_length_nm } = customFlightForm;
-
-    const partBasedFeatures = processPartData(currentPartData);
-    const weather = getHistoricalWeather(destination, flight_date);
-
-    const inputData = {
-      flight_hours: parseFloat(flight_hours),
-      cycles: parseInt(cycles),
-      ...partBasedFeatures,
-      ...weather,
-      avg_altitude_ft: parseFloat(avg_altitude_ft),
-      sector_length_nm: parseFloat(sector_length_nm),
-      turbulence_events: Math.floor(Math.random() * 3),
-      icing_reports: weather.temperature_c < 0 ? Math.floor(Math.random() * 2) : 0,
-      num_open_MEL_items: Math.floor(Math.random() * 2),
-      recent_minor_defects: Math.floor(Math.random() * 3),
-      bird_strike_reports: 0,
-      runway_incident_report: 0,
-      crew_hours_last_7days: 30 + Math.random() * 20,
-      turnaround_time_min: 40 + Math.random() * 20,
-      part_data: currentPartData
-    };
-
-    const response = await fetch('http://localhost:8001/predict', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(inputData)
-    });
-
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const predictionData = await response.json();
-
-    const customFlight = {
-      flight_id: flight_name || `CUSTOM_${Date.now()}_${destination}`,
-      flight_date: flight_date,
-      destination: destination,
-      ...predictionData,
-      input_data: inputData,
-      weather_data: {
-          ...weather,
-          is_extreme: weather.temperature_c < -5 || weather.humidity_pct > 90
-      },
-      is_custom: true
-    };
-
-    setPredictions(prev => [...prev, customFlight]);
-    setCustomFlights(prev => {
-      const updated = [...prev, customFlight];
-      localStorage.setItem('customFlights', JSON.stringify(updated));
-      return updated;
-    });
+    // This functionality is disabled in the static version.
+    alert("Adding flights is not supported in this demo version.");
   };
 
   const handleEditFlight = (flightId) => {
-    const flightToEdit = predictions.find(flight => flight.flight_id === flightId);
-    if (flightToEdit) {
-      setEditingFlight(flightToEdit);
-    }
+    // This functionality is disabled in the static version.
+    alert("Editing flights is not supported in this demo version.");
   };
 
   const handleUpdateFlight = async (updatedFlightForm, flightId) => {
-    const flightToUpdate = predictions.find(flight => flight.flight_id === flightId);
-    if (!flightToUpdate) return;
-
-    let currentPartData = JSON.parse(JSON.stringify(partData));
-    predictions.forEach(flight => {
-      if (flight.flight_id !== flightId) {
-        Object.keys(currentPartData).forEach(partName => {
-          currentPartData[partName].usedHours += flight.input_data.flight_hours;
-        });
-      }
-    });
-
-    const { flight_name, flight_hours, cycles, destination, flight_date, avg_altitude_ft, sector_length_nm } = updatedFlightForm;
-
-    const partBasedFeatures = processPartData(currentPartData);
-    const weather = getHistoricalWeather(destination, flight_date);
-
-    const inputData = {
-      flight_hours: parseFloat(flight_hours),
-      cycles: parseInt(cycles),
-      ...partBasedFeatures,
-      ...weather,
-      avg_altitude_ft: parseFloat(avg_altitude_ft),
-      sector_length_nm: parseFloat(sector_length_nm),
-      turbulence_events: Math.floor(Math.random() * 3),
-      icing_reports: weather.temperature_c < 0 ? Math.floor(Math.random() * 2) : 0,
-      num_open_MEL_items: Math.floor(Math.random() * 2),
-      recent_minor_defects: Math.floor(Math.random() * 3),
-      bird_strike_reports: 0,
-      runway_incident_report: 0,
-      crew_hours_last_7days: 30 + Math.random() * 20,
-      turnaround_time_min: 40 + Math.random() * 20,
-      part_data: currentPartData
-    };
-
-    const response = await fetch('http://localhost:8001/predict', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(inputData)
-    });
-
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const predictionData = await response.json();
-
-    const updatedFlight = {
-      flight_id: flight_name || flightToUpdate.flight_id.split('_')[0],
-      flight_date: flight_date,
-      destination: destination,
-      ...predictionData,
-      input_data: inputData,
-      weather_data: {
-          ...weather,
-          is_extreme: weather.temperature_c < -5 || weather.humidity_pct > 90
-      },
-      is_custom: flightToUpdate.is_custom // Preserve the original custom status
-    };
-
-    setPredictions(prev => prev.map(flight => flight.flight_id === flightId ? updatedFlight : flight));
-    if (flightToUpdate.is_custom) {
-      setCustomFlights(prev => {
-        const updated = prev.map(flight => flight.flight_id === flightId ? updatedFlight : flight);
-        localStorage.setItem('customFlights', JSON.stringify(updated));
-        return updated;
-      });
-    }
-    setEditingFlight(null);
+    // This functionality is disabled in the static version.
+    alert("Updating flights is not supported in this demo version.");
   };
 
   const handleRemoveFlight = (flightId) => {

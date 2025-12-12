@@ -1,0 +1,157 @@
+[
+    {
+        "flight_id": "SQ1000_2025-12-13_LHR",
+        "destination": "LHR",
+        "predicted_class": 2,
+        "probabilities": [
+            0.2031333931059278,
+            0.15897592808996078,
+            0.26491443718358426,
+            0.14739926027961284,
+            0.021161921337454315,
+            0.20441506000346005
+        ],
+        "top_features": {},
+        "recommendation": {
+            "recommendation": "Inspect hydraulic lines for leaks and pressure test the system.",
+            "recommended_part": "Hydraulic_System_Main",
+            "confidence": 0.94,
+            "urgency": "High",
+            "modifiers": []
+        },
+        "input_data": {
+            "flight_hours": 10.753400291906187,
+            "cycles": 1,
+            "avg_altitude_ft": 38168.18204060983,
+            "sector_length_nm": 6449.803095121249
+        },
+        "weather_data": {
+            "is_extreme": true
+        },
+        "scenario": "Normal Long Haul"
+    },
+    {
+        "flight_id": "SQ1001_2025-12-19_CDG",
+        "destination": "CDG",
+        "predicted_class": 2,
+        "probabilities": [
+            0.07179419248986627,
+            0.10063359980451572,
+            0.365339347610499,
+            0.12346381994448828,
+            0.3147946068466825,
+            0.02397443330394833
+        ],
+        "top_features": {},
+        "recommendation": {
+            "recommendation": "Inspect hydraulic lines for leaks and pressure test the system.",
+            "recommended_part": "Hydraulic_System_Main",
+            "confidence": 0.77,
+            "urgency": "High",
+            "modifiers": []
+        },
+        "input_data": {
+            "flight_hours": 14.79386099203357,
+            "cycles": 1,
+            "avg_altitude_ft": 35385.73764074794,
+            "sector_length_nm": 5322.023920458305
+        },
+        "weather_data": {
+            "is_extreme": false
+        },
+        "scenario": "Engine Stress"
+    },
+    {
+        "flight_id": "SQ1002_2025-12-26_DXB",
+        "destination": "DXB",
+        "predicted_class": 2,
+        "probabilities": [
+            0.04532514871810334,
+            0.12903224715784017,
+            0.38561110673593846,
+            0.15391790256699933,
+            0.049655261378802294,
+            0.23645833344231634
+        ],
+        "top_features": {},
+        "recommendation": {
+            "recommendation": "Inspect hydraulic lines for leaks and pressure test the system.",
+            "recommended_part": "Hydraulic_System_Main",
+            "confidence": 0.77,
+            "urgency": "High",
+            "modifiers": []
+        },
+        "input_data": {
+            "flight_hours": 11.305268845798244,
+            "cycles": 1,
+            "avg_altitude_ft": 31181.159510691014,
+            "sector_length_nm": 3998.581934410573
+        },
+        "weather_data": {
+            "is_extreme": false
+        },
+        "scenario": "Hydraulic Load"
+    },
+    {
+        "flight_id": "SQ1003_2026-01-02_JFK",
+        "destination": "JFK",
+        "predicted_class": 2,
+        "probabilities": [
+            0.19304001810102633,
+            0.051414854960539415,
+            0.28415452219903437,
+            0.1811105304047483,
+            0.15370104200551063,
+            0.1365790323291409
+        ],
+        "top_features": {},
+        "recommendation": {
+            "recommendation": "Inspect hydraulic lines for leaks and pressure test the system.",
+            "recommended_part": "Hydraulic_System_Main",
+            "confidence": 0.73,
+            "urgency": "High",
+            "modifiers": []
+        },
+        "input_data": {
+            "flight_hours": 10.745869808384057,
+            "cycles": 1,
+            "avg_altitude_ft": 28827.40523541357,
+            "sector_length_nm": 4848.611344682968
+        },
+        "weather_data": {
+            "is_extreme": true
+        },
+        "scenario": "Cold Weather"
+    },
+    {
+        "flight_id": "SQ1004_2026-01-09_SIN",
+        "destination": "SIN",
+        "predicted_class": 5,
+        "probabilities": [
+            0.0863177918613315,
+            0.12331229609268352,
+            0.10617378913876563,
+            0.17136446308402753,
+            0.24409252975680276,
+            0.2687391300663891
+        ],
+        "top_features": {},
+        "recommendation": {
+            "recommendation": "Inspect landing gear and fuselage sections for signs of corrosion or paint degradation.",
+            "recommended_part": "Landing_Gear_Assembly",
+            "confidence": 0.9,
+            "urgency": "Low",
+            "modifiers": []
+        },
+        "input_data": {
+            "flight_hours": 12.146520728353957,
+            "cycles": 1,
+            "avg_altitude_ft": 36127.19019371418,
+            "sector_length_nm": 4809.142654804895
+        },
+        "weather_data": {
+            "is_extreme": false
+        },
+        "scenario": "High Humidity"
+    }
+]
