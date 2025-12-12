@@ -1,15 +1,17 @@
 {
   "files": {
-    "main.css": "/PrognosAir/static/css/main.fda5d992.css",
-    "main.js": "/PrognosAir/static/js/main.36fafc27.js",
+    "main.css": "/PrognosAir/static/css/main.ac4b12c0.css",
+    "main.js": "/PrognosAir/static/js/main.5c0c18bd.js",
+    "static/js/967.8dd67c39.chunk.js": "/PrognosAir/static/js/967.8dd67c39.chunk.js",
     "static/js/453.37e040f0.chunk.js": "/PrognosAir/static/js/453.37e040f0.chunk.js",
     "index.html": "/PrognosAir/index.html",
-    "main.fda5d992.css.map": "/PrognosAir/static/css/main.fda5d992.css.map",
-    "main.36fafc27.js.map": "/PrognosAir/static/js/main.36fafc27.js.map",
+    "main.ac4b12c0.css.map": "/PrognosAir/static/css/main.ac4b12c0.css.map",
+    "main.5c0c18bd.js.map": "/PrognosAir/static/js/main.5c0c18bd.js.map",
+    "967.8dd67c39.chunk.js.map": "/PrognosAir/static/js/967.8dd67c39.chunk.js.map",
     "453.37e040f0.chunk.js.map": "/PrognosAir/static/js/453.37e040f0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fda5d992.css",
-    "static/js/main.36fafc27.js"
+    "static/css/main.ac4b12c0.css",
+    "static/js/main.5c0c18bd.js"
   ]
 }
