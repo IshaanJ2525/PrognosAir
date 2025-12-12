@@ -44,19 +44,19 @@ const TimetableOverlay = ({ onClose, theme }) => {
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-3xl bg-[#1B1C2A]/95 backdrop-blur-2xl border border-white/10 shadow-[0_0_8px_rgba(0,0,0,0.4)] rounded-3xl overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
+      <div className="relative w-full max-w-3xl bg-white dark:bg-[#1B1C2A]/95 backdrop-blur-2xl border border-gray-200 dark:border-white/10 shadow-[0_0_8px_rgba(0,0,0,0.4)] rounded-3xl overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-[#007AFF]/20">
-              <Clock className="h-5 w-5 text-[#007AFF]" />
+            <div className="p-2 rounded-xl bg-blue-100 dark:bg-[#007AFF]/20">
+              <Clock className="h-5 w-5 text-blue-600 dark:text-[#007AFF]" />
             </div>
-            <h2 className="text-2xl font-semibold text-white">Flight Timetable</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Flight Timetable</h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-full hover:bg-[#334155] p-2 transition"
+            className="rounded-full hover:bg-gray-100 dark:hover:bg-[#334155] p-2 transition"
           >
-            <X className="h-5 w-5 text-white" />
+            <X className="h-5 w-5 text-gray-900 dark:text-white" />
           </button>
         </div>
 
@@ -66,27 +66,27 @@ const TimetableOverlay = ({ onClose, theme }) => {
               {flights.map((flight, index) => (
                 <div
                   key={index}
-                  className="p-4 rounded-2xl bg-[#0A0F1F] border border-white/10 hover:bg-[#1E293B] transition-all"
+                  className="p-4 rounded-2xl bg-gray-50 dark:bg-[#0A0F1F] border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-[#1E293B] transition-all"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <Plane className="h-4 w-4 text-[#007AFF] rotate-45" />
-                      <span className="font-semibold text-white">{flight.flight}</span>
-                      <span className="text-sm text-gray-400">•</span>
-                      <span className="text-sm text-gray-400">{flight.registration}</span>
+                      <Plane className="h-4 w-4 text-blue-600 dark:text-[#007AFF] rotate-45" />
+                      <span className="font-semibold text-gray-900 dark:text-white">{flight.flight}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">•</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{flight.registration}</span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      flight.status === 'On Time' ? 'bg-green-500/20 text-green-500' :
-                      flight.status === 'Boarding' ? 'bg-[#007AFF]/20 text-[#007AFF]' :
-                      'bg-yellow-500/20 text-yellow-500'
+                      flight.status === 'On Time' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-500' :
+                      flight.status === 'Boarding' ? 'bg-blue-100 dark:bg-[#007AFF]/20 text-blue-700 dark:text-[#007AFF]' :
+                      'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-500'
                     }`}>
                       {flight.status}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-white">{flight.route}</p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{flight.route}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                         Dep: {flight.departure} • Arr: {flight.arrival}
                       </p>
                     </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 
 const optionsAirline = [
@@ -49,10 +50,10 @@ const Dropdown = ({ options, selected, onChange, width = 110, theme }) => {
   );
 };
 
-const HeaderSection = ({ onHazardsClick, onTimetableClick, onSettingsClick, onMaintenanceClick, onModelChange, theme }) => {
+const HeaderSection = ({ onTimetableClick, onSettingsClick, onMaintenanceClick, onPrognosisClick, onModelChange, theme }) => {
   const [airline, setAirline] = useState(optionsAirline[0]);
-  const [tailStart, setTailStart] = useState("");
-  const [tailEnd, setTailEnd] = useState("");
+  const [tailStart, setTailStart] = useState("9V");
+  const [tailEnd, setTailEnd] = useState("SCA");
   const [airport, setAirport] = useState(optionsAirport[0]);
 
   return (
@@ -60,12 +61,12 @@ const HeaderSection = ({ onHazardsClick, onTimetableClick, onSettingsClick, onMa
       {/* Container for left vertical buttons */}
       <div className="fixed top-40 left-6 flex flex-col space-y-4 z-50">
         <button
-          onClick={onHazardsClick}
+          onClick={onPrognosisClick}
           className="bg-white dark:bg-[#1B1C2A] hover:bg-blue-500 dark:hover:bg-[#007AFF] transition text-gray-900 dark:text-white rounded-xl p-3 shadow-[0_0_8px_rgba(0,0,0,0.4)]"
-          title="Hazard"
+          title="Prognosis"
         >
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
         </button>
         <button
@@ -119,7 +120,7 @@ const HeaderSection = ({ onHazardsClick, onTimetableClick, onSettingsClick, onMa
           spellCheck="false"
           className="bg-gray-100 dark:bg-[#252634] text-gray-900 dark:text-gray-400 placeholder:text-gray-400 dark:placeholder:text-gray-500 text-sm rounded-full px-4 py-1.5 focus:outline-none w-[90px]"
         />
-        <button onClick={() => onModelChange(`${tailStart}_${tailEnd}`)} className="ml-4 bg-blue-500 dark:bg-[#007AFF] hover:bg-blue-600 dark:hover:bg-[#005FCC] transition text-white rounded-full px-6 py-1.5 text-sm font-semibold">
+        <button onClick={() => onModelChange(`787-9_${tailStart}-${tailEnd}`)} className="ml-4 bg-blue-500 dark:bg-[#007AFF] hover:bg-blue-600 dark:hover:bg-[#005FCC] transition text-white rounded-full px-6 py-1.5 text-sm font-semibold">
           Load
         </button>
       </div>

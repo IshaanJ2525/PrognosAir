@@ -17,6 +17,9 @@ const AircraftModelViewer = ({ theme, modelName }) => {
 
 
 
+  const partDataRef = useRef(partData);
+  partDataRef.current = partData;
+
   useEffect(() => {
     const loadModelData = async () => {
       try {
@@ -35,7 +38,7 @@ const AircraftModelViewer = ({ theme, modelName }) => {
 
   useEffect(() => {
     const showOverlay = (name) => {
-      const part = partData[name];
+      const part = partDataRef.current[name];
       setSelectedPart(part);
     };
     const canvas = canvasRef.current;
@@ -90,7 +93,11 @@ const AircraftModelViewer = ({ theme, modelName }) => {
     ground.receiveShadow = true;
     scene.add(ground);
 
+    let mixer;
+    const clock = new THREE.Clock();
+
     const loader = new GLTFLoader();
+    console.log('Loading GLB model:', `${process.env.PUBLIC_URL}/models/${modelName}.glb`);
     loader.load(`${process.env.PUBLIC_URL}/models/${modelName}.glb`, (gltf) => {
       const model = gltf.scene;
       model.scale.set(1, 1, 1);
@@ -113,7 +120,16 @@ const AircraftModelViewer = ({ theme, modelName }) => {
       scene.add(model);
       modelRef.current = model;
 
-
+      // Animation handling
+      if (gltf.animations.length > 0) {
+        mixer = new THREE.AnimationMixer(model);
+        const action = mixer.clipAction(gltf.animations[0]);
+        action.loop = THREE.LoopOnce;
+        action.clampWhenFinished = true;
+        setTimeout(() => {
+          action.play();
+        }, 2000);
+      }
     });
 
     const handleResize = () => {
@@ -146,6 +162,9 @@ const AircraftModelViewer = ({ theme, modelName }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
+      if (mixer) {
+        mixer.update(clock.getDelta());
+      }
       renderer.render(scene, camera);
     };
     animate();
@@ -157,7 +176,7 @@ const AircraftModelViewer = ({ theme, modelName }) => {
       controls.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, modelName, partData]);
+  }, [theme, modelName]);
 
   return (
     <>
